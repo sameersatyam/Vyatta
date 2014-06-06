@@ -1,0 +1,28 @@
+heat_template_version: 2013-05-23
+
+description: Simple template to deploy a single compute instance
+
+resources:
+  Vyatta-hot:
+    type: OS::Nova::Server
+    properties:
+      image: Vyatta Network OS 6.5R2 
+      flavor: 1 GB Performance
+      user_data_format: RAW
+      config_drive: "true"
+      user_data: |
+        configure
+        set service https
+	commit
+	save
+	exit
+outputs:
+  ssh:
+    value:
+      str_replace:
+        template: ssh vyatta@%host%
+        params:
+          "%host%":
+            get_attr:
+            - Vyatta-hot
+            - accessIPv4
